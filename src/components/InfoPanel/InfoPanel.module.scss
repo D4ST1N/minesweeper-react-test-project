@@ -1,0 +1,30 @@
+.panelWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #efefef;
+  gap: 12px;
+}
+
+.bombsCount {
+  font-size: 36px;
+  min-width: 120px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.separator {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.timer {
+  font-size: 36px;
+  min-width: 120px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
