@@ -5,11 +5,11 @@ import GameView from "@/views/GameView/GameView";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: Home(),
+    element: <Home />,
   },
   {
     path: "/game",
-    element: GameView(),
+    element: <GameView />,
   },
 ]);
 
