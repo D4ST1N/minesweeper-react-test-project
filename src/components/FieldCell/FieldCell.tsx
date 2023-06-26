@@ -1,35 +1,25 @@
 import Icon from "@mdi/react";
 import { MouseEvent } from "react";
-import { mdiMine, mdiFlag, mdiHelpCircleOutline } from "@mdi/js";
+import { mdiMine } from "@mdi/js";
 import { FieldCell, FieldCellLabel } from "@/types/gameTypes";
 import styles from "./FieldCell.module.scss";
 import { classNames } from "@/helpers/utils";
+import FieldLabelIcon from "../FieldLabelIcon/FieldLabelIcon";
+import FieldCellCount from "../FieldCellCount/FieldCellCount";
 
-interface Props {
+interface FieldCellComponentProps {
   fieldCell: FieldCell;
   leftClick: () => void;
   middleClick: () => void;
   rightClick: () => void;
 }
 
-const minesNumberColorMapping: { [index: number]: string } = {
-  0: "#fff",
-  1: "#27a15c",
-  2: "#27a18f",
-  3: "#277ba1",
-  4: "#2754a1",
-  5: "#4927a1",
-  6: "#9227a1",
-  7: "#a12772",
-  8: "#a12728",
-};
-
 export default function FieldCellComponent({
   fieldCell,
   leftClick,
   middleClick,
   rightClick,
-}: Props) {
+}: FieldCellComponentProps) {
   const cellClasses = classNames({
     [styles.cell]: true,
     [styles.opened]: !fieldCell.isHidden,
@@ -39,37 +29,15 @@ export default function FieldCellComponent({
     [styles.highlight]: fieldCell.isHighlighted,
   });
 
-  const cellStyles = () => ({
-    color: minesNumberColorMapping[fieldCell.numberOfMinesNearby],
-  });
-
   const cellContent = () => {
-    if (fieldCell.label === FieldCellLabel.Flag) {
-      return (
-        <span>
-          <Icon path={mdiFlag} size={1} />
-        </span>
-      );
-    } else if (fieldCell.label === FieldCellLabel.Question) {
-      return (
-        <span>
-          <Icon path={mdiHelpCircleOutline} size={1} />
-        </span>
-      );
-    } else if (fieldCell.isHidden) {
-      return <span></span>;
+    if (fieldCell.label !== FieldCellLabel.None) {
+      return <FieldLabelIcon label={fieldCell.label} />;
     } else if (!fieldCell.isHidden && fieldCell.isPlanted) {
-      return (
-        <span>
-          <Icon path={mdiMine} size={1} />
-        </span>
-      );
+      return <Icon path={mdiMine} size={1} />;
+    } else if (!fieldCell.isHidden && !fieldCell.isPlanted) {
+      return <FieldCellCount numberOfMinesNearby={fieldCell.numberOfMinesNearby} />;
     } else {
-      return (
-        <span style={cellStyles()}>
-          {fieldCell.numberOfMinesNearby ? fieldCell.numberOfMinesNearby : ""}
-        </span>
-      );
+      return <span></span>;
     }
   };
 

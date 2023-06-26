@@ -4,12 +4,12 @@ import classes from "./InfoPanel.module.scss";
 import { useEffect, useRef, useState } from "react";
 import { GameCondition } from "@/types/gameTypes";
 
-interface Props {
+interface InfoPanelProps {
   status: GameCondition;
   bombsCount: number;
 }
 
-export default function InfoPanel({ status, bombsCount }: Props) {
+export default function InfoPanel({ status, bombsCount }: InfoPanelProps) {
   const [time, setTime] = useState(0);
   const timerIdRef = useRef<null | NodeJS.Timer>(null);
 

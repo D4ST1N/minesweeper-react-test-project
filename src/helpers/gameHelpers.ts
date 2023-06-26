@@ -6,7 +6,7 @@ import type {
   GameField,
   FieldCell,
 } from "@/types/gameTypes";
-import { FieldSize } from "@/types/gameTypes";
+import { DefaultFieldSize } from "@/types/gameTypes";
 import { defaultGameConfiguartions, emptyCell } from "./gameEntities";
 
 export function timeout(ms: number) {
@@ -114,7 +114,7 @@ export function getCellNeighbors(coordinates: FieldCellCoordinates, field: GameF
 }
 
 export function generateField(
-  fieldOptions: GameFieldOptions = defaultGameConfiguartions[FieldSize.Small],
+  fieldOptions: GameFieldOptions = defaultGameConfiguartions[DefaultFieldSize.Small],
 ): GameField {
   return Array(fieldOptions.width)
     .fill(null)

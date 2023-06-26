@@ -18,11 +18,17 @@ export enum FieldCellLabel {
   Question = "Question",
 }
 
-export enum FieldSize {
+export enum DefaultFieldSize {
   Small = "Small",
   Medium = "Medium",
   Expert = "Expert",
 }
+
+export enum CustomFieldSize {
+  Custom = "Custom",
+}
+
+export type FieldSize = DefaultFieldSize | CustomFieldSize;
 
 export enum GameCondition {
   Pending = "Pending",
@@ -32,7 +38,7 @@ export enum GameCondition {
 }
 
 export type GameConfigurations = {
-  [key in FieldSize]: GameFieldOptions;
+  [key in keyof typeof DefaultFieldSize]: GameFieldOptions;
 };
 
 export interface FieldCell {

@@ -1,16 +1,16 @@
 import { create } from "zustand";
 import { immer } from 'zustand/middleware/immer';
-import { FieldCell, FieldCellCoordinates, FieldCellLabel, FieldSize, GameCondition, GameField } from "@/types/gameTypes";
+import { FieldCell, FieldCellCoordinates, FieldCellLabel, DefaultFieldSize, GameFieldOptions, GameCondition, GameField } from "@/types/gameTypes";
 import { defaultGameConfiguartions } from "@/helpers/gameEntities";
 import { generateField, getCellNeighbors, populateField, timeout } from "@/helpers/gameHelpers";
 
 interface GameState {
   field: GameField | null;
-  sizeSelected: FieldSize;
+  selectedConfiguration: GameFieldOptions;
   bombsCount: number;
   status: GameCondition;
   interactionNotAllowed: () => boolean;
-  startNewGame: (size: FieldSize) => void;
+  startNewGame: (configuration: GameFieldOptions) => void;
   endGame: () => void;
   populateGame: (cellCoordinates: FieldCellCoordinates) => void;
   openCell: (cellCoordinates: FieldCellCoordinates) => void;
@@ -22,25 +22,29 @@ interface GameState {
 const useGameStore = create<GameState>()(
   immer((set, get) => ({
     field: null,
-    sizeSelected: FieldSize.Small,
+    selectedConfiguration: defaultGameConfiguartions[DefaultFieldSize.Small],
     bombsCount: 0,
     status: GameCondition.Pending,
+
     interactionNotAllowed: () => get().status === GameCondition.Victory || get().status === GameCondition.Defeat,
-    startNewGame: (size: FieldSize) => {
+
+    startNewGame: (configuration: GameFieldOptions) => {
       set((state) => {
-        state.field = generateField(defaultGameConfiguartions[size]);
-        state.sizeSelected = size;
-        state.bombsCount = defaultGameConfiguartions[size].numberOfMines;
+        state.field = generateField(configuration);
+        state.selectedConfiguration = configuration;
+        state.bombsCount = configuration.numberOfMines;
       });
     },
+
     endGame: () => {
       set((state) => {
         state.field = null;
-        state.sizeSelected = FieldSize.Small;
+        state.selectedConfiguration = defaultGameConfiguartions[DefaultFieldSize.Small];
         state.bombsCount = 0;
         state.status = GameCondition.Pending;
       });
     },
+
     populateGame: (cellCoordinates: FieldCellCoordinates) => {
       if (!get().field) return;
 
@@ -48,11 +52,12 @@ const useGameStore = create<GameState>()(
         state.status = GameCondition.Playing;
         state.field = populateField(
           get().field!,
-          defaultGameConfiguartions[get().sizeSelected].numberOfMines,
+          get().selectedConfiguration.numberOfMines,
           cellCoordinates,
         );
       });
     },
+
     openCell: async (cellCoordinates: FieldCellCoordinates) => {
       if (!get().field || get().interactionNotAllowed()) return;
 
@@ -60,10 +65,12 @@ const useGameStore = create<GameState>()(
 
       if (!cell.isHidden || cell.label !== FieldCellLabel.None) return;
 
+      // Open cell
       set((state) => {
         state.field![cellCoordinates.x][cellCoordinates.y].isHidden = false;
       });
 
+      // If cell with bomb - game is over
       if (cell.isPlanted) {
         set((state) => {
           state.status = GameCondition.Defeat;
@@ -72,9 +79,11 @@ const useGameStore = create<GameState>()(
         return;
       }
 
+      // Open all cells nearby if there no mines
       if (cell.numberOfMinesNearby === 0) {
         const neighbors = getCellNeighbors(cellCoordinates, get().field!);
 
+        // Add ripple effect
         await timeout(25);
         neighbors.forEach((neighbor) => {
           get().openCell(neighbor.coordinates);
@@ -83,6 +92,7 @@ const useGameStore = create<GameState>()(
 
       get().checkVictory();
     },
+
     toggleLabel: (cellCoordinates: FieldCellCoordinates) => {
       if (!get().field || get().interactionNotAllowed()) return;
 
@@ -90,6 +100,7 @@ const useGameStore = create<GameState>()(
 
       if (!cell.isHidden) return;
 
+      // Toggle cell label None -> Flag -> Qestion -> None
       if (cell.label === FieldCellLabel.None) {
         set((state) => {
           state.field![cellCoordinates.x][cellCoordinates.y].label = FieldCellLabel.Flag;
@@ -106,6 +117,7 @@ const useGameStore = create<GameState>()(
         });
       }
     },
+
     highlightNeighbors: async (cellCoordinates: FieldCellCoordinates) => {
       if (!get().field || get().interactionNotAllowed()) return;
 
@@ -113,6 +125,7 @@ const useGameStore = create<GameState>()(
 
       if (cell.numberOfMinesNearby === 0) return;
 
+      // Get all hidden nearby cells
       const neighbors = getCellNeighbors(cellCoordinates, get().field!);
       const hiddenNeighbors = neighbors.filter((neighbor) => neighbor.isHidden);
 
@@ -122,11 +135,13 @@ const useGameStore = create<GameState>()(
         (neighbor) => neighbor.label === FieldCellLabel.Flag,
       );
 
+      // Open all nearby cells if all mines flagged
       if (labeledNeighbors.length === cell.numberOfMinesNearby && !cell.isHidden) {
         hiddenNeighbors.forEach((neighbor) => {
           get().openCell(neighbor.coordinates);
         });
       } else {
+        // Highlight neighbors
         hiddenNeighbors.forEach((neighbor) => {
           if (neighbor.label !== FieldCellLabel.None || !get().field!) return;
 
@@ -137,6 +152,7 @@ const useGameStore = create<GameState>()(
 
         await timeout(250);
 
+        // Remove highlight
         hiddenNeighbors.forEach((neighbor) => {
           if (!get().field) return;
 
@@ -146,6 +162,7 @@ const useGameStore = create<GameState>()(
         });
       }
     },
+
     checkVictory: () => {
       if (!get().field) return;
 

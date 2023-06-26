@@ -1,23 +1,23 @@
 import {
   type FieldCell,
   FieldCellLabel,
-  FieldSize,
+  DefaultFieldSize,
   type GameConfigurations,
 } from "@/types/gameTypes";
 
 export const defaultGameConfiguartions: GameConfigurations = {
-  [FieldSize.Small]: {
+  [DefaultFieldSize.Small]: {
     width: 9,
     height: 9,
     numberOfMines: 10,
   },
-  [FieldSize.Medium]: {
+  [DefaultFieldSize.Medium]: {
     width: 16,
     height: 16,
     numberOfMines: 40,
   },
-  [FieldSize.Expert]: {
-    width: 30,
+  [DefaultFieldSize.Expert]: {
+    width: 32,
     height: 16,
     numberOfMines: 99,
   },
