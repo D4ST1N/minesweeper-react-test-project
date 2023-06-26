@@ -1,10 +1,13 @@
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import useGameStore from "@/stores/game";
-import { DefaultFieldSize } from "@/types/gameTypes";
+import { DefaultFieldSize, GameFieldOptions } from "@/types/gameTypes";
 import { defaultGameConfiguartions } from "@/helpers/gameEntities";
+import SelectCustomSizeModal from "../SelectCustomSizeModal/SelectCustomSizeModal";
+import { useState } from "react";
 
 export default function GameStartActions() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const field = useGameStore((state) => state.field);
   const startNewGame = useGameStore((state) => state.startNewGame);
 
@@ -12,6 +15,19 @@ export default function GameStartActions() {
 
   function startGameWithDefaultConfiguration(size: DefaultFieldSize) {
     startNewGame(defaultGameConfiguartions[size]);
+  }
+
+  function showModal() {
+    setIsModalOpen(true);
+  }
+
+  function handleClose() {
+    setIsModalOpen(false);
+  }
+
+  function handleSubmit(customGameOptions: GameFieldOptions) {
+    handleClose();
+    startNewGame(customGameOptions);
   }
 
   return (
@@ -37,7 +53,11 @@ export default function GameStartActions() {
         >
           Expert
         </Button>
+        <Button variant="contained" color="info" onClick={showModal}>
+          Custom
+        </Button>
       </Stack>
+      <SelectCustomSizeModal open={isModalOpen} onClose={handleClose} onSubmit={handleSubmit} />
     </div>
   );
 }
