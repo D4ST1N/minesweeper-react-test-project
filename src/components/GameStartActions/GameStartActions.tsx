@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import useGameStore from "@/stores/game";
+import { useField, useGameActions } from "@/stores/game";
 import { DefaultFieldSize, GameFieldOptions } from "@/types/gameTypes";
 import { defaultGameConfiguartions } from "@/helpers/gameEntities";
 import SelectCustomSizeModal from "../SelectCustomSizeModal/SelectCustomSizeModal";
@@ -8,8 +8,8 @@ import { useState } from "react";
 
 export default function GameStartActions() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const field = useGameStore((state) => state.field);
-  const startNewGame = useGameStore((state) => state.startNewGame);
+  const field = useField();
+  const { startNewGame } = useGameActions();
 
   if (field) return null;
 

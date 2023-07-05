@@ -1,15 +1,12 @@
 import FieldCell from "../FieldCell/FieldCell";
-import useGameStore from "@/stores/game";
+import { useField, useStatus, useGameActions } from "@/stores/game";
 import classes from "./Field.module.scss";
 import { FieldCellCoordinates, GameCondition } from "@/types/gameTypes";
 
 function Field() {
-  const field = useGameStore((state) => state.field);
-  const status = useGameStore((state) => state.status);
-  const populateGame = useGameStore((state) => state.populateGame);
-  const openCell = useGameStore((state) => state.openCell);
-  const highlightNeighbors = useGameStore((state) => state.highlightNeighbors);
-  const toggleLabel = useGameStore((state) => state.toggleLabel);
+  const field = useField();
+  const status = useStatus();
+  const { populateGame, openCell, highlightNeighbors, toggleLabel } = useGameActions();
 
   function handleLeftClick(x: number, y: number) {
     const coordinates: FieldCellCoordinates = { x, y };

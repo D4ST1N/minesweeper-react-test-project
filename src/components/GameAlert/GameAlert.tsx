@@ -1,12 +1,12 @@
-import useGameStore from "@/stores/game";
+import { useStatus, useGameActions } from "@/stores/game";
 import { GameCondition } from "@/types/gameTypes";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import classes from "./GameAlert.module.scss";
 
 export default function GameAlert() {
-  const status = useGameStore((state) => state.status);
-  const endGame = useGameStore((state) => state.endGame);
+  const status = useStatus();
+  const { endGame } = useGameActions();
 
   if (![GameCondition.Victory, GameCondition.Defeat].includes(status)) return null;
 
